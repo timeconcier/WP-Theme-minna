@@ -1,7 +1,6 @@
 <?php
 
 $childThemeDir = get_stylesheet_directory();
-include_once('/home/tc2/timeconcier.jp/public_html/forline/tccom/tcLibKintone.php');
 
 include_once("{$childThemeDir}/functions/constants.php");
 include_once("{$childThemeDir}/functions/admin_actions.php");
