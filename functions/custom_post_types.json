@@ -1,0 +1,30 @@
+[
+    {
+        "name": "enterprises",
+        "label": "事業所情報",
+        "endpoint": "ep",
+        "path": "posts",
+        "icon": "dashicons-store"
+    },
+    {
+        "name": "job_offers",
+        "label": "求人情報",
+        "endpoint": "jo",
+        "path": "posts",
+        "icon": "dashicons-id-alt"
+    },
+    {
+        "name": "events",
+        "label": "イベント情報",
+        "endpoint": "ev",
+        "path": "posts",
+        "icon": "dashicons-calendar-alt"
+    },
+    {
+        "name": "coupons",
+        "label": "クーポン",
+        "endpoint": "cp",
+        "path": "posts",
+        "icon": "dashicons-tickets"
+    }
+]

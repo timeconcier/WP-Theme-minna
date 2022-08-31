@@ -1,0 +1,14 @@
+/* .v-main header.v-toolbar.v-app-bar {
+    position: fixed;
+    z-index: 1;
+}
+
+.v-main .container {
+    margin-top: 64px;
+} */
+
+.tox-tinymce {
+    border-radius: 4px !important;
+    border-color: #9e9e9e !important;
+    width: 100%;
+}
