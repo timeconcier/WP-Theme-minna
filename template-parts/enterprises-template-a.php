@@ -69,10 +69,6 @@
       </div>
     </div>
   </div>
-  <!-- <div class="w-100 d-sm-flex mx-auto mb-2 justify-content-center align-items-end gap-2">
-    
-    
-  </div> -->
 
 
   <div class="py-4 w-100 mx-auto" style="max-width:800px;">

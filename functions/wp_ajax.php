@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST)) {
 //00000000000000000000000000000000000000000000000000000000000000000000
 /** ***************************************
  * create_user
+ * @param String email    - 【必須】メールアドレス
  * @param String username - 【必須】ユーザーID
  * @param String password - 【必須】パスワード
- * @param String password - 【必須】メールアドレス
- * @param String role     - 権限ロール(administrator | editor | author | subscriber)
+ * @param String meta     - カスタムフィールド
  **************************************** */
 add_action('wp_ajax_createUser', 'createUser');
 add_action('wp_ajax_nopriv_createUser', 'createUser');
@@ -956,27 +956,6 @@ function removeMedia() {
     echo '削除エラー: ',  $e->getMessage(), "\n";
     exit;
   }
-  die();
-}
-
-/** ***************************************
- * kintoneへレコード登録
- * @param Number app_id - 【必須】アプリID
- * @param Array  data   - 【必須】kintone形式送信データ
- * @param Number rec_id - レコード番号（あれば更新）
- *************************************** */
-add_action('wp_ajax_upsertToKintone', 'upsertToKintone');
-function upsertToKintone() {
-  $req    = $_REQUEST;
-  $app_id = $req['app_id'];
-  $rec_id = $req['rec_id'];
-  $data   = $req['data'];
-
-  $kintoneApi = new tcLibKintone();
-
-  $ret = ($rec_id) ? $kintoneApi->putRec($app_id, $rec_id, $data) : $kintoneApi->postRec($app_id, $data);
-
-  echo json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
   die();
 }
 

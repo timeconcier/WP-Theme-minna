@@ -46,12 +46,12 @@ function post_status_update()
     )
   );
 
-  $client = new \CybozuHttp\Api\KintoneApi(new \CybozuHttp\Client([
-    'domain'    => TC_CY_DOMAIN,
-    'subdomain' => TC_CY_SUBDOMAIN,
-    'login'     => TC_CY_USER,
-    'password'  => TC_CY_PASSWORD,
-  ]));
+  $header = array(
+    'X-Kintone-Url: '. KINTONE_BASE_URL,
+    'X-Kintone-Username: '. KINTONE_USERNAME,
+    'X-Kintone-Password: '. KINTONE_PASSWORD,
+  );
+
   foreach ($posts_args as $post) {
 
     // 該当の投稿をすべて取得
@@ -65,8 +65,22 @@ function post_status_update()
       if ($rec_id = get_field('レコード番号', $p->ID)) {
         $results['post_id'] = $p->ID;
         $results['rec_id']  = $rec_id;
+        // $results['kt_result'] = $client->record()->put($post['appId'], intval($rec_id), $post['update']);
+
         // kintone更新
-        $results['kt_result'] = $client->record()->put($post['appId'], intval($rec_id), $post['update']);
+        $results['kt_result'] = exec_curl(
+          KINTONE_API_URL.'/record/upsetRecord',
+          'POST',
+          array(
+            'app' => $post['appId'],
+            'updateKey' => array(
+              'field' => 'レコード番号',
+              'value' => intval($rec_id),
+            ),
+            'record' => $post['update']
+          ),
+          $header
+        )['response'];
 
         // 投稿ステータスを「非表示」に設定
         $results['wp_result'] = wp_update_post(array(
@@ -196,9 +210,9 @@ add_action('schedule_private_posts_delete', function () {
   if (get_current_user_id() == 1) {
     $post_types = array(
        // WP 投稿タイプ => kintone アプリID
-      'job_offers' => array('id' => 96, 'name' => '求人'),
-      'coupons'    => array('id' => 88, 'name' => 'クーポン'),
-      'events'     => array('id' => 89, 'name' => 'イベント'),
+      'job_offers' => array('id' => KINTONE_JOB_OFFER,  'name' => '求人'),
+      'coupons'    => array('id' => KINTONE_COUPON,     'name' => 'クーポン'),
+      'events'     => array('id' => KINTONE_EVENT,      'name' => 'イベント'),
     );
 
     // ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
@@ -208,17 +222,16 @@ add_action('schedule_private_posts_delete', function () {
       // =======================================
       // kintoneから公開終了レコードを取得
       // =======================================
-      $url = 'https://kintone.digital-town.jp/record/getAllRecords';
       $data = array(
         'app'       => $p['id'],
         'condition' => $p['name'].'ステータス in ("終了")',
       );
       $header = array(
-        'X-Kintone-Url: https://digital-town.cybozu.com',
-        'X-Kintone-Username: Administrator',
-        'X-Kintone-Password: acdcity0746a',
+        'X-Kintone-Url: ' . KINTONE_BASE_URL,
+        'X-Kintone-Username: '. KINTONE_USERNAME,
+        'X-Kintone-Password: '. KINTONE_PASSWORD,
       );
-      $get = exec_curl($url, 'GET', $data, $header);
+      $get = exec_curl(KINTONE_API_URL.'/record/getAllRecords', 'GET', $data, $header);
       $exists_rec_ids = array();
       // ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
       // kintoneのレコードをループ
@@ -279,18 +292,17 @@ add_action('schedule_private_posts_delete', function () {
         file_put_contents(dirname(__DIR__) . '/log/wp_cron.log', PHP_EOL."{$pt}({$p['id']}): {$count}件", FILE_APPEND);
         // print_r($rids);
 
-        $url = 'https://kintone.digital-town.jp/record/deleteAllRecords';
         $data = array(
           'app'     => $p['id'],
           'records' => $rids,
         );
         $header = array(
-          'X-Kintone-Url: https://digital-town.cybozu.com',
-          'X-Kintone-Username: Administrator',
-          'X-Kintone-Password: acdcity0746a',
+          'X-Kintone-Url: '. KINTONE_BASE_URL,
+          'X-Kintone-Username: '. KINTONE_USERNAME,
+          'X-Kintone-Password: '. KINTONE_PASSWORD,
         );
 
-        $delete = exec_curl($url, 'DELETE', $data, $header);
+        $delete = exec_curl(KINTONE_API_URL.'/record/deleteAllRecords', 'DELETE', $data, $header);
         // print_r($delete.PHP_EOL);
         file_put_contents(dirname(__DIR__) . '/log/wp_cron.log', PHP_EOL."{$delete}", FILE_APPEND);
       }
@@ -329,7 +341,8 @@ add_action('wp', function () {
  * @return array
  *********************************************************** */
 function exec_curl ($url, $method, $data, $headers) {
-  $ch = curl_init();
+  $data = http_build_query($data);
+  $ch   = curl_init();
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   if ($headers) {
@@ -341,7 +354,7 @@ function exec_curl ($url, $method, $data, $headers) {
     case 'DELETE':
     case 'delete':
       if ($data) {
-        curl_setopt($ch, CURLOPT_URL, $url.'?'.http_build_query($data));
+        curl_setopt($ch, CURLOPT_URL, $url.'?'.$data);
       } else {
         curl_setopt($ch, CURLOPT_URL, $url);
       }
@@ -353,7 +366,9 @@ function exec_curl ($url, $method, $data, $headers) {
     case 'PUT':
     case 'put':
       curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_POST, true);
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data);  //データの配列を設定する
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       break;
   }
 
