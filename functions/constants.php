@@ -21,7 +21,7 @@ define( 'KINTONE_PLAN_MASTER', 99);		// プランマスター
 define( 'SMTP_HOST',     'sv8214.xserver.jp' );
 define( 'SMTP_PORT',     '587' );
 define( 'SMTP_USERNAME', 'noreply@digital-town.jp' );
-define( 'SMTP_PASSWORD', 'bds4v1s5' );
+define( 'SMTP_PASSWORD', '51d5nbd7' );
 
 
 
