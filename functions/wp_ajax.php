@@ -459,14 +459,15 @@ function getPost() {
 
 /** ***************************************
  * upsert_post
- * @param Array  post_title  - 【必須】投稿タイトル
- * @param String post_type   - 【必須】投稿タイプ
- * @param Number author_id   - 【必須】投稿者ID
- * @param Number post_id     - 【条件必須】投稿ID（あれば更新）
- * @param Array  post_slug   - スラッグ
- * @param String post_status - [default] publish | draft
- * @param Array  taxonomies  - タクソノミー
- * @param Array  acf         - カスタムフィード
+ * @param String post_title   - 【必須】投稿タイトル
+ * @param String post_type    - 【必須】投稿タイプ
+ * @param Number author_id    - 【必須】投稿者ID
+ * @param Number post_id      - 【条件必須】投稿ID（あれば更新）
+ * @param String post_content - 投稿内容
+ * @param Array  post_slug    - スラッグ
+ * @param String post_status  - [default] publish | draft
+ * @param Array  taxonomies   - タクソノミー
+ * @param Array  acf          - カスタムフィード
  **************************************** */
 add_action('wp_ajax_upsertPost', 'upsertPost');
 add_action('wp_ajax_nopriv_upsertPost', 'upsertPost');
@@ -474,10 +475,11 @@ function upsertPost() {
   $rate = 0;
   $req      = $_REQUEST;
   $post_obj = array();
-  if ($req['post_id'])    $post_obj['ID']         = $req['post_id'];       // 投稿ID（あれば更新）
-  if ($req['post_slug'])  $post_obj['post_name']  = $req['post_slug'];     // スラッグ
-  if ($req['post_title']) $post_obj['post_title'] = $req['post_title'];    // タイトル
-  if ($req['post_date'])  $post_obj['post_date']  = $req['post_date'];     // 投稿日
+  if ($req['post_id'])      $post_obj['ID']           = $req['post_id'];      // 投稿ID（あれば更新）
+  if ($req['post_slug'])    $post_obj['post_name']    = $req['post_slug'];    // スラッグ
+  if ($req['post_title'])   $post_obj['post_title']   = $req['post_title'];   // タイトル
+  if ($req['post_content']) $post_obj['post_content'] = $req['post_content']; // 投稿内容
+  if ($req['post_date'])    $post_obj['post_date']    = $req['post_date'];    // 投稿日
 
   // print_r($req['taxonomies']);
 
