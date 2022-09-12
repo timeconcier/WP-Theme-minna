@@ -1,0 +1,20 @@
+[
+    {
+        "name": "cat_post",
+        "label": "記事種別",
+        "hierarchical": true,
+        "post_type": ["post"]
+    },
+    {
+        "name": "cat_parentings",
+        "label": "子育てタグ",
+        "hierarchical": false,
+        "post_type": ["parentings"]
+    },
+    {
+        "name": "recipes",
+        "label": "料理・レシピタグ",
+        "hierarchical": false,
+        "post_type": ["recipes"]
+    }
+]

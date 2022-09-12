@@ -1,2 +1,4 @@
 /log
 functions/constants.php
+functions/custom_post_types.json
+functions/custom_taxonomies.json

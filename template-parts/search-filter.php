@@ -1,12 +1,4 @@
-<?php
-$post_type = $args['post_type'];
-$post_types = [
-  'enterprises' => ['name' => 'まち',       'taxonomy' => 'header_category', 'tax' => 'lg'],
-  'job_offers'  => ['name' => '求人',       'taxonomy' => 'header_category', 'tax' => 'lg'],
-  'coupons'     => ['name' => 'クーポン',  'taxonomy' => 'cat_coupon',      'tax' => 'cp'],
-  'events'      => ['name' => 'イベント',  'taxonomy' => 'cat_events',      'tax' => 'ev'],
-];
-?>
+<?php $post_type = $args['post_type']; ?>
 <input type="hidden" name="pt" value="<?= $post_type; ?>">
 <div class="px-3 py-2 mb-3" style="background-color:rgba(255,255,255, .9)">
 
@@ -75,7 +67,6 @@ $post_types = [
           'orderby'	 => 'ID',
           'order'		 => 'ASC',
       ) );
-
     // ======================================================================== ?>
       <div class="d-flex flex-wrap gap-2 justify-content-center">
         <?php foreach($terms as $t): ?>
@@ -110,14 +101,49 @@ $post_types = [
         </div>
         <?php endforeach; ?>
       </div>
+  <?php
+    // ========================================================================
+    // 上以外でカスタムタクソノミーありの検索
+    // ------------------------------------------------------------------------
+    elseif (taxonomy_exists('cat_'.$post_type)):
+      $terms = get_categories( array(
+        'exclude'     => '4828',
+        'taxonomy'	  => 'cat_'.$post_type,
+        'hide_empty'  => 0,
+        'orderby'	    => 'ID',
+        'order'		    => 'ASC',
+      ) );
+    // ======================================================================== ?>
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <?php foreach($terms as $t): ?>
+        <div class="form-check">
+          <label class="form-check-label d-flex gap-1">
+            <input type="checkbox" name="tag[]" class="form-check-input" value="<?= urldecode($t->slug); ?>">
+            <span><?= $t->name; ?></span>
+          </label>
+        </div>
+        <?php endforeach; ?>
+      </div>
+  <?php
+    // ========================================================================
+    // 上以外
+    // ------------------------------------------------------------------------
+    else :
+    // ======================================================================== ?>
+      <div class="form-group mb-3">
+        <label class="fw-bold" for=""><small>キーワード</small></label>
+        <input type="text" class="form-control mb-3" placeholder="キーワード" value="<?php echo get_search_query(); ?>" name="s" title="検索" />
+      </div>
 
   <?php endif; ?>
 
   <div class="w-100 d-flex justify-content-center mt-2 gap-3">
-    <button type="button" class="btn btn-secondary bg-light px-3 py-1" style="min-width:135px;" name="show-filter">
-      <span>もっと詳しく</span>
-      <i id="icon-filter-caret" class="bi bi-caret-down-fill"></i>
-    </button>
+    <?php if (taxonomy_exists('cat_'.$post_type)): ?>
+      <button type="button" class="btn btn-secondary bg-light px-3 py-1" style="min-width:135px;" name="show-filter">
+        <span>もっと詳しく</span>
+        <i id="icon-filter-caret" class="bi bi-caret-down-fill"></i>
+      </button>
+    <?php endif; ?>
 
     <button type="submit" class="btn btn-primary px-3 py-1" style="min-width:135px;" name="show-filter">
       <span>検索</span>
@@ -129,7 +155,8 @@ $post_types = [
 
       <div class="form-group mb-3">
         <label class="fw-bold" for=""><small>キーワード</small></label>
-        <input type="text" class="form-control mb-3" placeholder="例：◯◯市 カフェ お店" value="<?php echo get_search_query(); ?>" name="s" title="検索" />
+        <?php $placeholder = in_array($post_type, ['post', 'parentings', 'recipes']) ? 'キーワード' : '例：◯◯市 カフェ お店'; ?>
+        <input type="text" class="form-control mb-3" placeholder="<?= $placeholder; ?>" value="<?php echo get_search_query(); ?>" name="s" title="検索" />
       </div>
       <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ フィルター ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ -->
       <?php

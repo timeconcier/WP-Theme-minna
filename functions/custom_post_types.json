@@ -1,30 +1,16 @@
 [
     {
-        "name": "enterprises",
-        "label": "事業所情報",
-        "endpoint": "ep",
+        "name": "parentings",
+        "label": "子育て",
+        "endpoint": "prnt",
         "path": "posts",
-        "icon": "dashicons-store"
+        "icon": "dashicons-smiley"
     },
     {
-        "name": "job_offers",
-        "label": "求人情報",
-        "endpoint": "jo",
+        "name": "recipes",
+        "label": "料理・レシピ",
+        "endpoint": "rcp",
         "path": "posts",
-        "icon": "dashicons-id-alt"
-    },
-    {
-        "name": "events",
-        "label": "イベント情報",
-        "endpoint": "ev",
-        "path": "posts",
-        "icon": "dashicons-calendar-alt"
-    },
-    {
-        "name": "coupons",
-        "label": "クーポン",
-        "endpoint": "cp",
-        "path": "posts",
-        "icon": "dashicons-tickets"
+        "icon": "dashicons-buddicons-community"
     }
 ]

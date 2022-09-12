@@ -255,6 +255,35 @@ if (is_search()) {
       }
 
       break;
+
+
+      /** ****************************************************************
+       * 子育て取得用クエリ
+       **************************************************************** */
+      case 'parentings':
+        $args['meta_query']['word'] = array( 'relation' => 'OR' );
+
+        foreach($arr_search as $word){
+          if(empty($word)) continue;
+          // 文字列検索
+          $args['meta_query']['word'][] = array( 'key' => '記事情報', 'value' => $word, 'compare' => 'LIKE' );
+        }
+        $args['orderby']['modified'] = 'DESC';
+        break;
+
+
+      /** ****************************************************************
+       * レシピ一覧取得用クエリ
+       **************************************************************** */
+      case 'recipes':
+        $args['meta_query']['word'] = array( 'relation' => 'OR' );
+
+        foreach($arr_search as $word){
+          if(empty($word)) continue;
+          // 文字列検索
+          $args['meta_query']['word'][] = array( 'key' => '記事情報', 'value' => $word, 'compare' => 'LIKE' );
+        }
+        break;
   }
 
   foreach ($params as $key => $prm) {
@@ -301,6 +330,10 @@ if (is_search()) {
           $key = 'cat_job_offer_genre_stay';
           $fld = 'name';
           break;  // 求人票ジャンル（宿泊）
+        case 'tag':
+          $key = 'cat_'.$post_type;
+          $fld = 'name';
+          break;  // 求人票ジャンル（宿泊）
         default:
           $key = null;
           break;  // その他
@@ -318,7 +351,6 @@ if (is_search()) {
 
     }
   }
-  // if ($current_user == 1) print_r($args);
 }
 
 /** **************************************************************
@@ -461,7 +493,7 @@ $the_query = new WP_Query($args);
         $post_id   = get_the_ID();
         $thumnbnal = get_the_post_thumbnail_url($post_id);
         // $thumnbnal = ($thumnbnal) ? $thumnbnal : wp_get_attachment_url(NO_IMAGE_ID);
-        $hCat = colorType($post_id);
+        // $hCat = colorType($post_id);
         if ($hCat['type'] == 'bs_class') {
           $bg_color_bs  = "bg-{$hCat['color']}";
           $bg_color_hex = '';
@@ -831,6 +863,81 @@ $the_query = new WP_Query($args);
           </div>
         </div>
 
+        <?php
+          // ========================================================================
+          // 子育て検索、料理・レシピ検索
+          // ------------------------------------------------------------------------
+          elseif(
+            $post_type == 'parentings' ||
+            $post_type == 'recipes' ||
+            in_array('parentings', $post_type) ||
+            in_array('recipes', $post_type)
+          ):
+
+          // print_r($post);
+          // $genre = get_the_terms($post_id, 'cat_recipes');
+          // print_r($genre);
+          $permaUrl   = ($epOutLink and $epUrl) ? $epUrl : $permaUrl;
+          $tags = [];
+          if (is_array($post_type)) {
+            foreach($post_type as $pt) {
+              if (taxonomy_exists("cat_{$pt}")) {
+                $_tags = get_the_terms($post->ID, "cat_{$pt}");
+                $tags = array_merge($tags, $_tags);
+              }
+            }
+          } else {
+            $tags = get_the_terms($post->ID, "cat_{$post_type}");
+          }
+          // print_r($tags);
+          // ========================================================================
+        ?>
+        <div class="col-12 col-sm-6 mb-3">
+          <div class="d-flex justify-content-between align-items-center bg-primary p-2 gap-1">
+            <a href="<?= $permaUrl; ?>" class="fw-bold text-white"><?= the_title(); ?></a>
+          </div>
+          <div class="d-sm-flex bg-white mb-3 w-100 border border-primary border-top-0">
+            <?php if($thumnbnal): ?>
+            <div class="mx-auto" style="width:100%;max-height:180px;">
+              <a href="<?= $permaUrl; ?>">
+                <img src="<?= $thumnbnal; ?>" class="d-block w-100" style="height:180px;object-fit:cover;" alt="">
+              </a>
+            </div>
+            <?php endif; ?>
+
+            <div class="d-flex flex-column justify-content-between gap-1 p-2" style="<?= ($thumnbnal) ? 'min-width:calc(100% - 200px);' : 'width:100%;' ?>">
+              <?php
+                $content = get_field('記事情報');
+                $content = wp_strip_all_tags( $content );
+                $content = strip_shortcodes( $content );
+                if (mb_strlen($content)>50) {
+                  $content = wp_trim_words($content, 50, '…' );
+                }
+              ?>
+              <span><?= $content ?></span>
+              <!-- タグ一覧 -->
+              <?php if($tags and count($tags) > 0) : ?>
+                <div class="d-flex flex-wrap">
+                  <?php foreach($tags as $tag): ?>
+                    <span class="badge rounded-pill fw-normal bg-warning m-1 px-3 py-1" style="font-size:9pt;"><?= $tag->name; ?></span>
+                  <?php endforeach; ?>
+                </div>
+              <?php endif; ?>
+
+              <!-- 投稿者 -->
+              <div>
+                <small class="fw-bold d-flex align-items-center gap-2">
+                  <span style="width:5rem;"><i class="fas fa-edit">投稿者</i></span>
+                  <?= the_author_meta('display_name'); ?>
+                </small>
+                <small class="fw-bold d-flex align-items-center gap-2">
+                  <span style="width:5rem;"><i class="fas fa-clock">投稿日時</i></span>
+                  <?= get_the_date('Y年m月d日  H:i'); ?>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
         <?php endif; ?>
 
       <?php endwhile; else : ?>
@@ -839,8 +946,7 @@ $the_query = new WP_Query($args);
         <p class="my-auto fw-bold">お探しの<?= $post_type_name; ?>は見つかりませんでした。</p>
       </div>
 
-    <?php endif;
-    wp_reset_postdata(); ?>
+    <?php endif; wp_reset_postdata(); ?>
 
   </div>
   <?php get_template_part('template-parts/custom_pagination', null, $the_query); ?>
