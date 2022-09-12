@@ -31,6 +31,7 @@ $themeUrl = get_stylesheet_directory_uri();
         } else {
           $thumbnail = get_the_post_thumbnail_url($post_id, 'medium');
         }
+        $thumbnail = (has_post_thumbnail($post_id)) ? $thumbnail : wp_get_attachment_url(NO_IMAGE_ID);
   ?>
     <div class="col-6 col-md-4 col-lg-3">
       <a href="<?php the_permalink() ?>" class="col-6 col-sm-4 p-2 mb-2">
