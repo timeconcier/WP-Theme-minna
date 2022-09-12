@@ -35,19 +35,7 @@ function cptui_register_my_cpts() {
 				'with_front' => true
 			],
 			'query_var'             => true,
-			'supports'              => [
-				'title',
-				// 'editor',
-				'thumbnail',
-				'excerpt',
-				'trackbacks',
-				'custom-fields',
-				'comments',
-				// 'revisions',
-				'author',
-				'page-attributes',
-				'post-formats'
-			],
+			'supports'              => $pt->supports,
 			'show_in_graphql'       => false,
 		];
 

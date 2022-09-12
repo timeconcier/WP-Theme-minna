@@ -4,27 +4,31 @@
         "label": "事業所情報",
         "endpoint": "ep",
         "path": "posts",
-        "icon": "dashicons-store"
+        "icon": "dashicons-store",
+        "supports": []
     },
     {
         "name": "job_offers",
         "label": "求人情報",
         "endpoint": "jo",
         "path": "posts",
-        "icon": "dashicons-id-alt"
+        "icon": "dashicons-id-alt",
+        "supports": []
     },
     {
         "name": "events",
         "label": "イベント情報",
         "endpoint": "ev",
         "path": "posts",
-        "icon": "dashicons-calendar-alt"
+        "icon": "dashicons-calendar-alt",
+        "supports": []
     },
     {
         "name": "coupons",
         "label": "クーポン",
         "endpoint": "cp",
         "path": "posts",
-        "icon": "dashicons-tickets"
+        "icon": "dashicons-tickets",
+        "supports": []
     }
 ]
