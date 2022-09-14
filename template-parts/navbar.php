@@ -39,6 +39,7 @@ $post_types = array(
       <?php foreach ($post_types as $subdom => $custom_posts) : ?>
         <?php foreach($custom_posts as $custom_post) : ?>
           <?php foreach($custom_post as $post_slug => $post_label) : ?>
+            <?php if(strstr(get_bloginfo('url'), 'minna') && $subdom !== 'minna') continue; ?>
             <li class="nav-item mx-3">
               <a class="nav-link <?= ($post_type == $post_slug) ? 'active' : ''; ?>" href="<?= "https://$subdom.digital-town.jp/$post_slug" ?>"><?= $post_label; ?></a>
             </li>
