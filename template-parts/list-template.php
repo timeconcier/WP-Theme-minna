@@ -185,7 +185,7 @@ if (is_search()) {
           $args['meta_query']['period'][] = array('key' => '開催日_自_', 'compare' => '>=', 'value' => $params['f_ev_start'], 'type' => 'DATE');
           $args['meta_query']['period'][] = array('key' => '開催日_至_', 'compare' => '>=', 'value' => $params['f_ev_start'], 'type' => 'DATE');
         } elseif (!$params['f_ev_start'] and $params['f_ev_end']) {
-          $args['meta_query']['period'][] = array('key' => '開催日_自_', 'compare' => '<=', 'value' => $params['f_ev_end'], 'type' => 'DATE');
+          $args['meta_query']['period'][] = array('key' => '開催日_自_', 'compare' => '>=', 'value' => $params['f_ev_end'], 'type' => 'DATE');
           $args['meta_query']['period'][] = array('key' => '開催日_至_', 'compare' => '<=', 'value' => $params['f_ev_end'], 'type' => 'DATE');
         }
       } else {
