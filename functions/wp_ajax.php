@@ -65,6 +65,59 @@ function createUser() {
 
 /** ***************************************
  * get_user
+ * @param Number lineId  - 【必須】LINEユーザーID
+ **************************************** */
+add_action('wp_ajax_getUserInfoByLINE', 'getUserInfoByLINE');
+add_action('wp_ajax_nopriv_getUserInfoByLINE', 'getUserInfoByLINE');
+function getUserInfoByLINE() {
+  $req    = $_REQUEST;
+  $lineId = $req['lineId'];
+
+
+  $args = array(
+    'meta_key'     => 'line_id',
+    'meta_value'   => $lineId,
+    'meta_compare' => '=',
+
+  );
+  $user_query = new WP_User_Query($args);
+
+  $user_data = $user_query->get_results();
+  $user_data = count($user_data) > 0 ? $user_data[0]->data : null;
+  $user_meta = get_user_meta($user_data->ID, '', false);
+
+  // $user_meta を $user_data にマージ
+  foreach ($user_meta as $key => $value) {
+    if( preg_match('/^\_/', $key) ) {
+      $acf_key = substr($key, 1);
+      $user_data->$acf_key = $user_meta[$acf_key][0];
+    }
+  }
+
+  if ($user_data) {
+    $user_data->id = $user_data->ID;
+    // プロパティ排除
+    unset($user_data->ID);
+    foreach ($user_data as $key => $value) {
+      if (
+        // 先頭文字
+        preg_match('/^um_/',        $key) or
+        // 末尾文字
+        preg_match('/_pass$/',      $key)
+        // 含有文字
+      ) {
+        unset($user_data->$key);
+      }
+    }
+  }
+
+  echo json_encode($user_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+  die();
+}
+
+
+/** ***************************************
+ * get_user
  * @param Number uid    - ユーザーID
  * @param Number field  - 【条件必須 - ユーザーID不明の場合】id | email | slug | login
  * @param Number value  - 【条件必須 - ユーザーID不明の場合】検索値
@@ -117,8 +170,21 @@ function getUserInfoBy() {
   die();
 }
 
+/** ***************************************
+ * get_supporter_info
+ * ログイン中のサポーター情報を取得する
+ *************************************** */
+add_action('wp_ajax_getSupporterInfo', 'getSupporterInfo');
+add_action('wp_ajax_nopriv_getSupporterInfo', 'getSupporterInfo');
+function getSupporterInfo() {
+  $user = wp_get_current_user();
+  $ret = [
+    'name' => $user->display_name,
+  ];
 
-
+  echo json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+  die();
+}
 
 /** ***************************************
  * update_user
@@ -374,7 +440,6 @@ function getPosts() {
   $args['order']       = ($req['order_desc'])  ? 'DESC' : 'ASC';
 
   $posts_array = get_posts($args);
-  // print_r($posts_array);
 
   foreach ($posts_array as $post) {
     $post_id = $post->ID;
@@ -548,7 +613,7 @@ function upsertPost() {
 
   if ($taxs) {
     foreach ($taxs as $taxonomy => $terms) {
-      if (is_array($terms) and count($terms) > 0) {
+      if (is_array($terms)) {
         $newTaxs = array_map('intval', $terms);
         wp_set_object_terms($ret->ID, $newTaxs, $taxonomy);
       }
@@ -863,13 +928,13 @@ function getTags() {
   die();
 }
 
+
 /** ***************************************
- * 画像アップロード
- * @param Object $_FILES - 【必須】ファイルオブジェクト
- * @param Number media_id - 投稿ID
+ * 画像ダウンロード
+ * @param Number media_id - メディアID
  *************************************** */
-add_action('wp_ajax_uploadMedia', 'downloadMedia');
-add_action('wp_ajax_nopriv_uploadMedia', 'downloadMedia');
+add_action('wp_ajax_downloadMedia', 'downloadMedia');
+add_action('wp_ajax_nopriv_downloadMedia', 'downloadMedia');
 function downloadMedia() {
   $req      = $_REQUEST;
   $media_id = $req['id'];
@@ -878,15 +943,19 @@ function downloadMedia() {
     $file_info  = new finfo(FILEINFO_MIME_TYPE);
     $file_path  = get_attached_file($media_id);
     if (!$file_path) return;
+    $file_name  = array_reverse(explode('/', $file_path))[0];
     $file       = file_get_contents($file_path);
 		$mime_type  = $file_info->buffer($file);
 
     echo json_encode([
       'data'      => base64_encode($file),
+      'name'      => $file_name,
       'mimeType'  => $mime_type,
     ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
   }
+  die();
 }
+
 
 /** ***************************************
  * 画像アップロード
