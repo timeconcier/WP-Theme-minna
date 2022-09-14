@@ -35,12 +35,12 @@ $post_types = array(
 
   <div class="collapse navbar-collapse justify-content-center" id="navbarColor02">
     <ul class="navbar-nav">
-      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="https://minna.digital-town.jp/">Home</a>
       <?php foreach ($post_types as $subdom => $custom_posts) : ?>
         <?php foreach($custom_posts as $custom_post) : ?>
           <?php foreach($custom_post as $post_slug => $post_label) : ?>
             <li class="nav-item mx-3">
-              <a class="nav-link <?= ($post_type == $post_slug) ? 'active' : ''; ?>" href="<?= "https://minna.digital-town.jp/$post_slug" ?>"><?= $post_label; ?></a>
+              <a class="nav-link <?= ($post_type == $post_slug) ? 'active' : ''; ?>" href="<?= "https://$subdom.digital-town.jp/$post_slug" ?>"><?= $post_label; ?></a>
             </li>
           <?php endforeach; ?>
         <?php endforeach; ?>
