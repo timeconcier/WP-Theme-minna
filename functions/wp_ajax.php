@@ -476,7 +476,6 @@ function upsertPost() {
   $req      = $_REQUEST;
   $post_obj = array();
   if ($req['post_id'])      $post_obj['ID']           = $req['post_id'];      // 投稿ID（あれば更新）
-  if ($req['post_slug'])    $post_obj['post_name']    = $req['post_slug'];    // スラッグ
   if ($req['post_title'])   $post_obj['post_title']   = $req['post_title'];   // タイトル
   if ($req['post_content']) $post_obj['post_content'] = $req['post_content']; // 投稿内容
   if ($req['post_date'])    $post_obj['post_date']    = $req['post_date'];    // 投稿日
@@ -486,6 +485,10 @@ function upsertPost() {
   $post_obj['post_author'] = ($req['post_author']) ? $req['post_author'] : 1;              // 投稿者ID
   $post_obj['post_status'] = ($req['post_status']) ? $req['post_status'] : 'publish';      // [default] publish | draft
   $post_obj['post_type']   = ($req['post_type'])   ? $req['post_type']   : 'enterprises';  // 投稿タイプ
+
+  $slug_prefix = substr($post_obj['post_type'], 0, 3);
+  $post_obj['post_name']   = ($req['post_slug'])   ? $req['post_slug']   : $slug_prefix .'-'. microtime(true) * 1000;    // スラッグ
+  // if (!preg_match('/-/',$post_obj['post_name']) $post_obj['post_name'] = $slug_prefix .'-'. $post_obj['post_name'];
 
   $acf  = ($req['acf']) ? $req['acf'] : null; // カスタムフィード
   $taxs = $req['taxonomies'];    // タクソノミー
