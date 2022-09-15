@@ -261,6 +261,8 @@ if (is_search()) {
        * 標準クエリ
        **************************************************************** */
       case 'post':
+        $args['exact'] = false;
+        $args['s'] = $search_query;
         break;
   }
 

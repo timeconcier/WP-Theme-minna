@@ -224,7 +224,7 @@ add_action( 'pre_get_posts', function( $q ) {
             // Modified WHERE
             $sql['where'] = sprintf(
                 " AND ( %s OR %s ) ",
-                $wpdb->prepare( "{$wpdb->posts}.post_title like '%%%s%%'", $title),
+                $wpdb->prepare( "{$wpdb->posts}.post_title like '%s'", $title),
                 mb_substr( $sql['where'], 5, mb_strlen( $sql['where'] ) )
             );
 
