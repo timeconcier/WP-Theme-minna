@@ -121,6 +121,14 @@ $postType = getPostType();
 				<?php get_template_part('searchform'); ?>
 			</div>
 		</div>
+	<?php elseif (is_home() || is_front_page()): ?>
+		<?php if (!strstr(get_bloginfo('url'), 'minna')) : ?>
+			<div class="position-relative py-4" style="background-image: url(https://minna.digital-town.jp/wp-content/themes/minna_no_site-v2/_images/bg_town.png); background-repeat:repeat-x;background-position:bottom;">
+				<div class="w-100 mx-auto px-2" style="max-width:1200px;">
+					<?php get_template_part('searchform'); ?>
+				</div>
+			</div>
+		<?php endif; ?>
 	<?php endif; ?>
 
 	<div class="mx-auto pt-2" style="max-width:1200px;">

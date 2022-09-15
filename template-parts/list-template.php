@@ -258,31 +258,9 @@ if (is_search()) {
 
 
       /** ****************************************************************
-       * 子育て取得用クエリ
+       * 標準クエリ
        **************************************************************** */
-      case 'parentings':
-        $args['meta_query']['word'] = array( 'relation' => 'OR' );
-
-        foreach($arr_search as $word){
-          if(empty($word)) continue;
-          // 文字列検索
-          $args['meta_query']['word'][] = array( 'key' => '記事情報', 'value' => $word, 'compare' => 'LIKE' );
-        }
-        $args['orderby']['modified'] = 'DESC';
-        break;
-
-
-      /** ****************************************************************
-       * レシピ一覧取得用クエリ
-       **************************************************************** */
-      case 'recipes':
-        $args['meta_query']['word'] = array( 'relation' => 'OR' );
-
-        foreach($arr_search as $word){
-          if(empty($word)) continue;
-          // 文字列検索
-          $args['meta_query']['word'][] = array( 'key' => '記事情報', 'value' => $word, 'compare' => 'LIKE' );
-        }
+      case 'post':
         break;
   }
 
@@ -290,6 +268,10 @@ if (is_search()) {
     if ($key == 'pt' || $key == 's') continue;
     if ($prm) {
       switch ($key) {
+        case 'c':
+          $key = 'category';
+          $fld = 'slug';
+          break;  // 標準カテゴリ
         case 'l':
           $key = 'cities';
           $fld = 'slug';
@@ -334,6 +316,14 @@ if (is_search()) {
           $key = 'cat_'.$post_type;
           $fld = 'name';
           break;  // 求人票ジャンル（宿泊）
+        case 't_prt':
+          $key = 'tag_parentings';
+          $fld = 'slug';
+          break;  // 子育てタグ
+        case 't_rcp':
+          $key = 'tag_recipes';
+          $fld = 'slug';
+          break;  // レシピタグ
         default:
           $key = null;
           break;  // その他
@@ -867,12 +857,7 @@ $the_query = new WP_Query($args);
           // ========================================================================
           // 子育て検索、料理・レシピ検索
           // ------------------------------------------------------------------------
-          elseif(
-            $post_type == 'parentings' ||
-            $post_type == 'recipes' ||
-            in_array('parentings', $post_type) ||
-            in_array('recipes', $post_type)
-          ):
+          else:
 
           // print_r($post);
           // $genre = get_the_terms($post_id, 'cat_recipes');
@@ -895,6 +880,12 @@ $the_query = new WP_Query($args);
         <div class="col-12 col-sm-6 mb-3">
           <div class="d-flex justify-content-between align-items-center bg-primary p-2 gap-1">
             <a href="<?= $permaUrl; ?>" class="fw-bold text-white"><?= the_title(); ?></a>
+            <div></div>
+            <div class="d-flex flex-wrap">
+              <?php foreach(get_the_terms($post->ID, "category") as $cat): ?>
+                <span class="badge rounded-pill fw-normal bg-success m-1 px-3 py-1" style="font-size:9pt;"><?= $cat->name; ?></span>
+              <?php endforeach; ?>
+            </div>
           </div>
           <div class="d-sm-flex bg-white mb-3 w-100 border border-primary border-top-0">
             <?php if($thumnbnal): ?>
@@ -907,14 +898,14 @@ $the_query = new WP_Query($args);
 
             <div class="d-flex flex-column justify-content-between gap-1 p-2" style="<?= ($thumnbnal) ? 'min-width:calc(100% - 200px);' : 'width:100%;' ?>">
               <?php
-                $content = get_field('記事情報');
-                $content = wp_strip_all_tags( $content );
+                $content = wp_strip_all_tags( get_the_content() );
                 $content = strip_shortcodes( $content );
                 if (mb_strlen($content)>50) {
                   $content = wp_trim_words($content, 50, '…' );
                 }
               ?>
               <span><?= $content ?></span>
+
               <!-- タグ一覧 -->
               <?php if($tags and count($tags) > 0) : ?>
                 <div class="d-flex flex-wrap">

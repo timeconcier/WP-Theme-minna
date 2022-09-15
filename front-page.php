@@ -1,6 +1,5 @@
 <?php
 get_header();
-// get_template_part('searchform');
 $themeUrl = get_stylesheet_directory_uri();
 ?>
 
@@ -47,12 +46,9 @@ $themeUrl = get_stylesheet_directory_uri();
   <?php else: ?>
         <?php
           $i = 0;
-          $post_types = [];
-          foreach(get_post_types( array( 'public'  => true, '_builtin' => false ) ) as $pt => $name) $post_types[] = $name;
-
           $args   = array(
             'posts_per_page' => 20,
-            'post_type'      => $post_types,
+            'post_type'      => 'post',
             'post_status'    => 'publish',
             'paged'          => $paged,
             'tax_query'      => array(

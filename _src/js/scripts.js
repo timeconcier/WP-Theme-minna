@@ -1,11 +1,11 @@
 /** ******************************************************************************
  * フィルター表示/非表示
  ****************************************************************************** */
-const btnShowFilter = document.getElementsByName("show-filter");
+const btnShowFilter = document.getElementById("show-filter");
 const iconShowFilter = document.getElementById("icon-filter-caret");
 const areaFilter = document.getElementById("filter-area");
-if (btnShowFilter.length && areaFilter) {
-  btnShowFilter[0].addEventListener("click", () => {
+if (btnShowFilter && areaFilter) {
+  btnShowFilter.addEventListener("click", () => {
     if (iconShowFilter.classList[1] === "bi-caret-down-fill") {
       iconShowFilter.classList.remove("bi-caret-down-fill");
       iconShowFilter.classList.add("bi-caret-up-fill");

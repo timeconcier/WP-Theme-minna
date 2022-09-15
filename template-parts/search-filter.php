@@ -138,14 +138,14 @@
   <?php endif; ?>
 
   <div class="w-100 d-flex justify-content-center mt-2 gap-3">
-    <?php if (taxonomy_exists('cat_'.$post_type) or !in_array($post_type, array('post'))): ?>
-      <button type="button" class="btn btn-secondary bg-light px-3 py-1" style="min-width:135px;" name="show-filter">
+    <?php if (taxonomy_exists('cat_'.$post_type) or strstr(get_bloginfo('url'), 'supporter')): ?>
+      <button type="button" class="btn btn-secondary bg-light px-3 py-1" style="min-width:135px;" id="show-filter">
         <span>もっと詳しく</span>
         <i id="icon-filter-caret" class="bi bi-caret-down-fill"></i>
       </button>
     <?php endif; ?>
 
-    <button type="submit" class="btn btn-primary px-3 py-1" style="min-width:135px;" name="show-filter">
+    <button type="submit" class="btn btn-primary px-3 py-1" style="min-width:135px;">
       <span>検索</span>
     </button>
   </div>
@@ -153,11 +153,13 @@
   <div id="filter-area" class="d-none">
     <div class="my-3">
 
-      <div class="form-group mb-3">
-        <label class="fw-bold" for=""><small>キーワード</small></label>
-        <?php $placeholder = in_array($post_type, ['post', 'parentings', 'recipes']) ? 'キーワード' : '例：◯◯市 カフェ お店'; ?>
-        <input type="text" class="form-control mb-3" placeholder="<?= $placeholder; ?>" value="<?php echo get_search_query(); ?>" name="s" title="検索" />
-      </div>
+      <?php if ($post_type !== 'post'): ?>
+        <div class="form-group mb-3">
+          <label class="fw-bold" for=""><small>キーワード</small></label>
+          <?php $placeholder = in_array($post_type, ['post', 'parentings', 'recipes']) ? 'キーワード' : '例：◯◯市 カフェ お店'; ?>
+          <input type="text" class="form-control mb-3" placeholder="<?= $placeholder; ?>" value="<?php echo get_search_query(); ?>" name="s" title="検索" />
+        </div>
+      <?php endif; ?>
       <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ フィルター ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ -->
       <?php
         // ========================================================================
@@ -309,6 +311,78 @@
               <small style="white-space: nowrap;">まで</small>
             </div>
           </div>
+
+        <?php
+        // ========================================================================
+        // 標準
+        // ------------------------------------------------------------------------
+        elseif($post_type === 'post'):
+        // ======================================================================== ?>
+          <?php
+            if (strstr(get_bloginfo('url'), 'supporter')) :
+              $category = get_terms('category', array('hide_empty' => false));
+              $t_prt    = get_terms('tag_parentings', array('hide_empty' => false));
+              $t_rcp    = get_terms('tag_recipes', array('hide_empty' => false));
+          ?>
+
+            <div class="form-group">
+                <div class="mb-2">
+                  <label class="d-block w-100 px-2 py-1 mb-2" style="background-color:#f5f5ff;" for="">口コミカテゴリー</label>
+                  <div class="container">
+                    <div class="row">
+                      <?php
+                        foreach($category as $term): if($parent->term_id == $term->parent): ?>
+                        <div class="form-check col-6 col-sm-4 col-md-3">
+                          <label class="form-check-label">
+                            <input type="checkbox" name="c[]" class="form-check-input" value="<?= $term->slug; ?>">
+                            <?= $term->name; ?>
+                          </label>
+                        </div>
+                      <?php endif; endforeach; ?>
+                    </div>
+                  </div>
+                </div>
+
+                <?php if(count($t_rcp)): ?>
+                  <div class="mb-2">
+                    <label class="d-block w-100 px-2 py-1 mb-2" style="background-color:#f5f5ff;" for="">子育てタグ</label>
+                    <div class="container">
+                      <div class="row">
+                        <?php
+                          foreach($t_prt as $term): if($parent->term_id == $term->parent): ?>
+                          <div class="form-check col-6 col-sm-4 col-md-3">
+                            <label class="form-check-label">
+                              <input type="checkbox" name="t_prt[]" class="form-check-input" value="<?= $term->slug; ?>">
+                              <?= $term->name; ?>
+                            </label>
+                          </div>
+                        <?php endif; endforeach; ?>
+                      </div>
+                    </div>
+                  </div>
+                <?php endif; ?>
+
+                <?php if(count($t_rcp)): ?>
+                  <div class="mb-2">
+                    <label class="d-block w-100 px-2 py-1 mb-2" style="background-color:#f5f5ff;" for="">料理・レシピタグ</label>
+                    <div class="container">
+                      <div class="row">
+                        <?php
+                          foreach($t_rcp as $term): if($parent->term_id == $term->parent): ?>
+                          <div class="form-check col-6 col-sm-4 col-md-3">
+                            <label class="form-check-label">
+                              <input type="checkbox" name="t_rcp[]" class="form-check-input" value="<?= $term->slug; ?>">
+                              <?= $term->name; ?>
+                            </label>
+                          </div>
+                        <?php endif; endforeach; ?>
+                      </div>
+                    </div>
+                  </div>
+              <?php endif; ?>
+            </div>
+
+          <?php endif; ?>
       <?php endif; ?>
     </div>
 

@@ -11,7 +11,7 @@ if(is_single()){
 } elseif(is_search()) {
 	$post_type = $_GET['pt'];
 } else {
-	$post_type = null;
+	$post_type = 'post';
 }
 ?>
 <form role="search" method="get" class="search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
