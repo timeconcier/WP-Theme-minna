@@ -438,6 +438,7 @@ function getPosts() {
   $args['post_status'] = ($req['post_status']) ? $req['post_status'] : 'any';
   $args['post_type']   = ($req['post_type'])   ? $req['post_type'] : 'post';
   $args['order']       = ($req['order_desc'])  ? 'DESC' : 'ASC';
+  if ($req['tax_query']) $args['tax_query'] = $req['tax_query'];
 
   $posts_array = get_posts($args);
 
@@ -446,10 +447,9 @@ function getPosts() {
 
     // タクソノミー情報
     foreach (get_post_taxonomies($post_id) as $tax) {
-      if ($tax !== 'category' and $tax !== 'post_tag') {
+      // print_r($tax);
         $terms = wp_get_post_terms($post_id, $tax, ['fields' => 'ids']);
         $post->{$tax} = $terms;
-      }
     }
 
     // サムネイル情報
@@ -498,10 +498,8 @@ function getPost() {
 
   // タクソノミー情報
   foreach (get_post_taxonomies($post_id) as $tax) {
-    if ($tax !== 'category' and $tax !== 'post_tag') {
-      $terms = wp_get_post_terms($post_id, $tax, ['fields' => 'ids']);
-      $ret->{$tax} = $terms;
-    }
+    $terms = wp_get_post_terms($post_id, $tax, ['fields' => 'ids']);
+    $ret->{$tax} = $terms;
   }
 
   // サムネイル情報
