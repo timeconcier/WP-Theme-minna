@@ -138,7 +138,12 @@
   <?php endif; ?>
 
   <div class="w-100 d-flex justify-content-center mt-2 gap-3">
-    <?php if (taxonomy_exists('cat_'.$post_type) or strstr(get_bloginfo('url'), 'supporter')): ?>
+    <?php if (taxonomy_exists('cat_'.$post_type) or !in_array($post_type, array('post'))): ?>
+      <button type="button" class="btn btn-secondary bg-light px-3 py-1" style="min-width:135px;" id="show-filter">
+        <span>もっと詳しく</span>
+        <i id="icon-filter-caret" class="bi bi-caret-down-fill"></i>
+      </button>
+    <?php elseif (strstr(get_bloginfo('url'), 'supporter')): ?>
       <button type="button" class="btn btn-secondary bg-light px-3 py-1" style="min-width:135px;" id="show-filter">
         <span>もっと詳しく</span>
         <i id="icon-filter-caret" class="bi bi-caret-down-fill"></i>
@@ -343,7 +348,7 @@
                   </div>
                 </div>
 
-                <?php if(count($t_rcp)): ?>
+                <?php if(count($t_prt)): ?>
                   <div class="mb-2">
                     <label class="d-block w-100 px-2 py-1 mb-2" style="background-color:#f5f5ff;" for="">子育てタグ</label>
                     <div class="container">
