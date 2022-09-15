@@ -108,6 +108,9 @@ jQuery($ => {
         });
       } else {
         let val = objParams[key];
+        if (key == 's') {
+          if (val) val = val.replace(/\+/g, ' ')
+        }
         let el = $(`form [name="${key}"]`);
         el.eq(0).val(val);
       }
