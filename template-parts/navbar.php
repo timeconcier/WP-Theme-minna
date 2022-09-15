@@ -39,13 +39,14 @@ $post_types = array(
       <?php foreach ($post_types as $subdom => $custom_posts) : ?>
         <?php foreach($custom_posts as $custom_post) : ?>
           <?php foreach($custom_post as $post_slug => $post_label) : ?>
-            <?php if(strstr(get_bloginfo('url'), 'minna') && $subdom !== 'minna') continue; ?>
+            <?php if($subdom === 'supporter') continue; ?>
             <li class="nav-item mx-3">
               <a class="nav-link <?= ($post_type == $post_slug) ? 'active' : ''; ?>" href="<?= "https://$subdom.digital-town.jp/$post_slug" ?>"><?= $post_label; ?></a>
             </li>
           <?php endforeach; ?>
         <?php endforeach; ?>
       <?php endforeach; ?>
+      <a class="nav-link" href="https://supporter.digital-town.jp/">口コミ</a>
 
       <li class="nav-item mx-3 px-2 d-none d-sm-block bg-warning">
         <a class="nav-link active" href="https://member.digital-town.jp/login" target="_blank">事業者ログイン</a>
