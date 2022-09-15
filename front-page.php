@@ -44,19 +44,19 @@ $themeUrl = get_stylesheet_directory_uri();
   <?php endforeach; wp_reset_postdata(); wp_reset_query(); ?>
 
   <?php else: ?>
-        <?php
-          $i = 0;
-          $args   = array(
-            'posts_per_page' => 20,
-            'post_type'      => 'post',
-            'post_status'    => 'publish',
-            'paged'          => $paged,
-            'tax_query'      => array(
-              'relation' => 'AND',
-            ),
-            'order'        => 'DESC',
-          );
-          $the_query = new WP_Query($args);
+      <?php
+        $i = 0;
+        $args   = array(
+          'posts_per_page' => 20,
+          'post_type'      => 'post',
+          'post_status'    => 'publish',
+          'paged'          => $paged,
+          'tax_query'      => array(
+            'relation' => 'AND',
+          ),
+          'order'        => 'DESC',
+        );
+        $the_query = new WP_Query($args);
 
           if ($the_query->have_posts()) : while ($the_query->have_posts()) : $the_query->the_post();
             $i++;
@@ -80,6 +80,12 @@ $themeUrl = get_stylesheet_directory_uri();
             <div class="col-12 col-sm-6 mb-3">
               <div class="d-flex justify-content-between align-items-center bg-primary p-2 gap-1">
                 <a href="<?= $permaUrl; ?>" class="fw-bold text-white"><?= the_title(); ?></a>
+                <div></div>
+                <div class="d-flex flex-wrap">
+                  <?php foreach(get_the_terms($post->ID, "category") as $cat): ?>
+                    <span class="badge rounded-pill fw-normal bg-success m-1 px-3 py-1" style="font-size:9pt;"><?= $cat->name; ?></span>
+                  <?php endforeach; ?>
+                </div>
               </div>
               <div class="d-sm-flex bg-white mb-3 w-100 border border-primary border-top-0">
                 <?php if($thumnbnal): ?>
@@ -92,8 +98,7 @@ $themeUrl = get_stylesheet_directory_uri();
 
                 <div class="d-flex flex-column justify-content-between gap-1 p-2" style="<?= ($thumnbnal) ? 'min-width:calc(100% - 200px);' : 'width:100%;' ?>">
                   <?php
-                    $content = get_field('記事情報');
-                    $content = wp_strip_all_tags( $content );
+                    $content = wp_strip_all_tags( get_the_content() );
                     $content = strip_shortcodes( $content );
                     if (mb_strlen($content)>50) {
                       $content = wp_trim_words($content, 50, '…' );
